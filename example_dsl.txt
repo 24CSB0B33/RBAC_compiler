@@ -1,0 +1,28 @@
+-> an example DSL lang for RBAC
+
+ROLE Teller
+{
+    PERMIT initiate_transfer,save_transfer
+}
+
+ROLE Approver
+{
+    PERMIT approve_transfer
+}
+
+DENY Teller,Approver
+
+ROLE Dev_Admin INHERITS Teller,Approver 
+{
+    PERMIT read_logs
+}
+
+-> Here the Role Dev_Admin gives an error as it INHERITS both Teller,Approver which are conflict pair,so error should be coming
+
+->here identifiers are Teller,Approve,Dev_Admin,initiate_transfer,save_transfer,approve_transfer,read_logs
+
+->keywords are ROLE,PERMIT,DENY,INHERITS
+
+->special characters are '{','}',','
+
+->CONFLICT can also be used instead of DENY.
