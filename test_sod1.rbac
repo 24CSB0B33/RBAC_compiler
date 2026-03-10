@@ -1,0 +1,18 @@
+role Teller
+{
+        permit initiate_transfer,view_balance
+}
+
+role Approver
+{
+        permit authorize_transfer,reverse_transaction
+}
+
+
+conflict Teller,Approver
+
+role BranchManager inherits Teller,Approver
+{
+        permit view_audit_logs
+}
+
