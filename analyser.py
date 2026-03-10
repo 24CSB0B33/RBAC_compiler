@@ -53,22 +53,27 @@ class Analyser:
         """ Standard DFS to detect cycles in the inheritance graph"""
         if not self.roles or self.errors:
             return
+            
         visited = set()
         stack = set()
 
         def visit(node):
             visited.add(node)
             stack.add(node)
-            for parent in self.roles.get(node,{}).get("parents",[]):
+            
+            for parent in self.roles.get(node, {}).get("parents", []):
+                
                 if parent not in self.roles:
-                    return False
+                    continue 
+                
                 if parent not in visited:
                     if visit(parent):
                         return True
-                    elif parent in stack:
-                        return True
-                stack.remove(node)
-                return False
+                elif parent in stack:
+                    return True
+            
+            stack.remove(node)
+            return False
 
         for role in self.roles:
             if role not in visited:
