@@ -31,6 +31,7 @@ def main():
         #Semantic Analysis (all error checks)
         analyser = Analyser(ast)
         errors = analyser.run()
+        
 
         if errors:
             print("\n[FAIL] Compilation Failed with errors.")
@@ -40,6 +41,12 @@ def main():
             sys.exit(1)
         else:
             print("[OK] Compilation successful with no errors.")
+
+        #optimizing
+        from optimizer import Optimizer
+        opt = Optimizer(ast)
+        optimized_ast = opt.optimize()
+        print("[OK] AST Optimized (Redundancies Removed).")
 
 
     except FileNotFoundError:

@@ -1,0 +1,84 @@
+RBAC Policy DSL Compiler
+========================
+
+A Domain-Specific Language (DSL) compiler designed to statically analyze, verify, and optimize Role-Based Access Control (RBAC) policies. 
+
+By modeling role inheritance as a directed graph and applying mathematical set theory, this compiler acts as a strict security gatekeeper. It prevents logical vulnerabilities—such as infinite inheritance cycles and Transitive Separation of Duty (SoD) violations—from ever reaching production environments.
+
+
+FEATURES
+--------
+* Custom Lexer & Parser: Transforms human-readable .rbac policy files into a structured Abstract Syntax Tree (AST).
+* Graph-Based Cycle Detection: Utilizes Depth-First Search (DFS) to map role hierarchies and detect infinite inheritance loops.
+* Separation of Duty (SoD) Verification: Evaluates transitive inheritance up to N levels deep to strictly enforce CONFLICT rules and prevent toxic privilege combinations.
+* AST Optimization: Automatically strips redundant transitive inheritance and duplicate permissions to generate a clean, highly efficient execution tree.
+* Context-Aware Error Reporting: Pinpoints exact line and column numbers for syntax and semantic violations.
+
+
+ARCHITECTURE PIPELINE
+---------------------
+The compiler processes policies through four strict phases. If any phase fails, compilation is immediately aborted to guarantee security.
+
+1. Lexical Analysis: Regex-based tokenization of the input stream.
+2. Syntax Analysis: Recursive descent parsing to validate EBNF grammar and build the AST.
+3. Semantic Analysis: Static security auditing (Undefined Parents, Duplicate Roles, Cycles, SoD).
+4. Optimization: Redundancy removal and AST compression.
+
+
+INSTALLATION & USAGE
+--------------------
+Prerequisites:
+* Python 3.8+ (No external libraries required; relies entirely on standard libraries).
+
+Running the Compiler:
+To compile and verify a policy file, run the main.py script via the command line, passing your target .rbac file as an argument:
+
+    python main.py path/to/your/policy.rbac
+
+Example Output (Successful):
+    === RBAC DSL Static Security Compiler ===
+    [*] Phase 1: Lexical Analysis...
+        -> Success: Generated 42 tokens.
+    [*] Phase 2: Syntax Parsing...
+        -> Success: AST built with 5 roles.
+    [*] Phase 3: Semantic Security Analysis...
+        -> Success: Policy is mathematically secure.
+    [*] Phase 4: AST Optimization...
+        -> Success: Redundancies stripped.
+    === COMPILATION COMPLETE ===
+
+
+LANGUAGE SYNTAX GUIDE
+---------------------
+The custom DSL uses a clean, brace-enclosed syntax designed specifically for security administrators.
+
+Keywords: ROLE, INHERITS, PERMIT, CONFLICT
+
+Example .rbac file:
+
+    // Define base roles and their permissions
+    ROLE Teller { PERMIT process_deposit, withdraw_funds }
+    ROLE Approver { PERMIT audit_transactions }
+
+    // Enforce Separation of Duty (SoD)
+    CONFLICT Teller, Approver
+
+    // Single Inheritance
+    ROLE SeniorTeller INHERITS Teller { PERMIT vault_access }
+
+    // Multiple Inheritance (Will trigger an SoD Violation!)
+    ROLE BranchManager INHERITS SeniorTeller, Approver { PERMIT fire_employee }
+
+
+TESTING
+-------
+The project includes a comprehensive unittest suite that evaluates individual modules (Unit Tests) and the end-to-end CLI pipeline (Integration Tests).
+
+To run the full test suite:
+
+    python -m unittest test_compiler.py -v
+
+
+LICENSE
+-------
+This project is open-source and available under the MIT License.
